@@ -1,0 +1,488 @@
+{
+    "ConnectionStrings": {
+        "SSMS": "mssql+pyodbc:///?odbc_connect=DRIVER%3D%7BODBC+Driver+17+for+SQL+Server%7D%3BSERVER%3D10.78.21.50%5CINTERNDEVBOX%3BDATABASE%3DMSI_Internship%3BUID%3Dsa%3BPWD%3DMotorola99%3B"
+    },
+    "DataQualityChecks": {
+        "Law": [
+            {
+                "DisplayName": "Row Count Check",
+                "Type": "Rows",
+                "Source": {
+                    "Table": "MSI_Internship_Delta.dbo.incidents",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Table": "FLEX_REMOTE_PRACTICE..admin.lwmain",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "IncidentID Uniqueness Check",
+                "Type": "Uniqueness",
+                "Table": "FLEX_REMOTE_PRACTICE..admin.lwmain",
+                "Columns": ["number"],
+                "Connection": "SSMS",
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Incident City Uniqueness Check",
+                "Type": "Uniqueness",
+                "Table": "FLEX_REMOTE_PRACTICE..admin.lwmain",
+                "Columns": ["city"],
+                "Connection": "SSMS",
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Total Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.incidents",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) FROM lwmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Check Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT incidents.incident_id, incidents.incident_datetime, CASE IncidentTypes.TypeName WHEN 'Domestic Violence' THEN 'Domestic' WHEN 'Vandalism - Forced to Exceed Field Limit' THEN 'Vandalism' ELSE IncidentTypes.TypeName END TypeName, incidents.incident_location AS city, cad_calls.call_datetime AS date_reported FROM MSI_Internship_Delta.dbo.incidents LEFT JOIN MSI_Internship_Delta.dbo.IncidentTypes ON incidents.IncidentTypeID = IncidentTypes.IncidentTypeID LEFT JOIN MSI_Internship_Delta.dbo.cad_calls ON incidents.cad_call_id = cad_calls.cad_call_id",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT \"number\", ocurdt1, TRIM(nature) nature, TRIM(city) city, dtrepor FROM lwmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Total Involved Name Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.names ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE typ = 1200 and reltyp = 900 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Name Records (Reverse)",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.names ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE reltyp = 1200 and typ = 900 and parent = 0')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved CAD Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.cad_calls ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE typ = 1200 and reltyp = 300 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved CAD Records (Reverse)",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.cad_calls ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE reltyp = 1200 and typ = 300 and parent = 0')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Property Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.property ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE typ = 1200 and reltyp = 200 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Property Records (Reverse)",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.property ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE reltyp = 1200 and typ = 200 and parent = 0')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Vehicles Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.vehicles ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE typ = 1200 and reltyp = 600 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Vehicles Records (Reverse)",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.vehicles ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE reltyp = 1200 and typ = 600 and parent = 0')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Converted Involved Name Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT incident_id, name_id, 0 seq, NameRoles.RoleName  FROM MSI_Internship_Delta.dbo.names JOIN MSI_Internship_Delta.dbo.NameRoles ON names.RoleID = NameRoles.RoleID",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT TRIM(rec) CaseNumber, TRIM(relrec) NameNumber, Seq, TRIM(relship) relship FROM syinvolv WHERE typ = 1200 and reltyp = 900 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Converted Involved CAD Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT incident_id, cad_call_id, 3 seq FROM MSI_Internship_Delta.dbo.incidents",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT TRIM(rec) CaseNumber, TRIM(relrec) CallNumber, Seq FROM syinvolv WHERE typ = 1200 and reltyp = 300 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Converted Involved Property Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT incident_id, property_id, 0 seq FROM MSI_Internship_Delta.dbo.property",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT TRIM(rec) CaseNumber, TRIM(relrec) CallNumber, Seq FROM syinvolv WHERE typ = 1200 and reltyp = 200 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Converted Involved Vehicles Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT incident_id, vehicle_id, 0 seq FROM MSI_Internship_Delta.dbo.vehicles",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT TRIM(rec) CaseNumber, TRIM(relrec) CallNumber, Seq FROM syinvolv WHERE typ = 1200 and reltyp = 600 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "IncidentID Null Check",
+                "Type": "NULL_CHECK",
+                "Table": "MSI_Internship_Delta.dbo.incidents",
+                "Columns": ["incident_id", "status"],
+                "Connection": "SSMS",
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            }
+        ],
+
+        "CAD": [
+            {
+                "DisplayName": "Total Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.cad_calls",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) FROM cdcall ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Check Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT cad_call_id, call_type, priority, call_datetime AS reptd, location AS city, caller_name AS contact FROM MSI_Internship_Delta.dbo.cad_calls",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT \"number\", TRIM(nature) nature, TRIM(priort) priort, reptd, TRIM(rtcity) rtcity, TRIM(contact) contact FROM cdcall')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "1"
+            }
+        ],
+
+        "Names": [
+            {
+                "DisplayName": "Total Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.names",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) FROM nmmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Check Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT name_id, last_name, first_name, date_of_birth, SUBSTRING(names.address, 1, CHARINDEX(',', names.address)-1) AS street, LTRIM(RTRIM(SUBSTRING(names.address, CHARINDEX(',', names.address) + 1, LEN(names.address)))) AS city, CASE WHEN gender = 'Male' THEN 'M' WHEN gender = 'Female' THEN 'F' WHEN gender = 'Other' THEN 'U' ELSE gender END AS sex, CASE WHEN gender = 'Male' THEN 'MAL' WHEN gender = 'Female' THEN 'FEM' WHEN gender = 'Other' THEN 'OTH' ELSE gender END AS gender FROM MSI_Internship_Delta.dbo.names",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT \"number\", TRIM(last) last, TRIM(first) first, birthd, TRIM(street) street, TRIM(city) city, TRIM(sex) sex, TRIM(gender) gender FROM nmmain')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Address Pattern Check",
+                "Type": "PATTERN",
+                "Table": "FLEX_REMOTE_PRACTICE..admin.nmmain",
+                "Column": "street",
+                "Pattern": "^\\d+\\s+([A-Za-z0-9]+\\s?)+$",
+                "Connection": "SSMS",
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            }
+        ],
+
+        "Property": [
+            {
+                "DisplayName": "Total Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.property",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) FROM prmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Check Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT property_id, incident_id, serial_number, value_estimate, CASE PropertyTypes.TypeName WHEN 'Vehicle' THEN 'Car' WHEN 'Other' THEN 'Miscellaneous' WHEN 'Electronics' THEN 'Device' ELSE PropertyTypes.TypeName END AS item FROM MSI_Internship_Delta.dbo.property JOIN MSI_Internship_Delta.dbo.PropertyTypes ON PropertyTypes.PropertyTypeID = property.PropertyTypeID",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT \"number\", incnumb, TRIM(serial) serial, value, TRIM(item) item FROM prmain')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "1"
+            }
+        ],
+
+        "Vehicles": [
+            {
+                "DisplayName": "Total Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.vehicles",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) FROM vhmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "Source",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Check Converted Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT vehicle_id, incident_id, license_plate, vin, ISNULL(CAST(owner_id AS VARCHAR),'') owner_id, CASE color WHEN 'Black' THEN 'BLK' WHEN 'Blue' THEN 'BLU' WHEN 'Red' THEN 'RED' WHEN 'Silver' THEN 'SIL' WHEN 'White' THEN 'WHI' ELSE color END AS color, CASE VehicleMakes.MakeName WHEN 'Chevrolet' THEN 'CHEV' WHEN 'Honda' THEN 'HOND' WHEN 'Nissan' THEN 'NISS' WHEN 'Toyota' THEN 'TOYT' ELSE VehicleMakes.MakeName END AS Make, VehicleModels.ModelName FROM MSI_Internship_Delta.dbo.vehicles LEFT JOIN MSI_Internship_Delta.dbo.VehicleMakes ON VehicleMakes.MakeID = vehicles.MakeID LEFT JOIN MSI_Internship_Delta.dbo.VehicleModels ON VehicleModels.ModelID = vehicles.ModelID",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT \"number\", incnumb, TRIM(lpnum) lpnum, TRIM(vin) vin, TRIM(ownerid) ownerid, TRIM(color1) color1, TRIM(make) make, TRIM(model) model FROM vhmain ')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "1"
+            },
+            {
+                "DisplayName": "Total Involved Owner Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.vehicles WHERE owner_id IS NOT NUll ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE typ = 600 and reltyp = 900 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Total Involved Owner Records (Reverse)",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT COUNT(*) TotalRows FROM MSI_Internship_Delta.dbo.vehicles WHERE owner_id IS NOT NULL ",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT COUNT(*) TotalRows FROM syinvolv WHERE reltyp = 600 and typ = 900 and parent = 0')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "Converted Involved Owner Records",
+                "Type": "Custom",
+                "Source": {
+                    "Query": "SELECT vehicle_id, ISNULL(CAST(owner_id AS VARCHAR),'') owner_id, 2 seq FROM MSI_Internship_Delta.dbo.vehicles WHERE owner_id IS NOT NULL",
+                    "Filter": "",
+                    "Connection": "SSMS"
+                },
+                "Target": {
+                    "Query": "SELECT * FROM OPENQUERY(FLEX_REMOTE_PRACTICE, 'SELECT TRIM(rec) VehicleNumber, TRIM(relrec) OwnerNumber, Seq FROM syinvolv WHERE typ = 600 and reltyp = 900 and parent = 1')",
+                    "Connection": "SSMS"
+                },
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            },
+            {
+                "DisplayName": "OwnerID Null Check",
+                "Type": "NULL_CHECK",
+                "Table": "MSI_Internship_Delta.dbo.vehicles",
+                "Columns": ["owner_id"],
+                "Connection": "SSMS",
+                "Results": "All",
+                "Active": "1",
+                "Debug": "0"
+            }
+        ]
+    }
+}
